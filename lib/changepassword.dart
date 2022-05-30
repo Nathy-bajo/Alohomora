@@ -30,14 +30,9 @@ class _LoginDemoState extends State<LoginDemo> {
   TextEditingController _email = TextEditingController();
 
   Future postData() async {
-    const String pathUrl = 'http://192.168.100.204:8080/reset';
+    const String pathUrl = 'http://192.168.100.249:8080/reset';
     try {
-      // FormData formData = FormData.fromMap({
-      //   "email": _email.text,
-      //   "current_password": _password.text,
-      //   "new_password": _new_password.text,
-      //   "new_password_check": _confirm_password.text
-      // });
+
       dio.options.headers['content-Type'] = 'application/json';
 
       Response response = await dio.post(pathUrl, data: {
@@ -70,10 +65,7 @@ class _LoginDemoState extends State<LoginDemo> {
               child: SizedBox(
                 width: 200,
                 height: 150,
-                /*deocration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(50.0)
-                  )*/
+
                 child: Image.asset('images/password.png'),
               ),
             ),

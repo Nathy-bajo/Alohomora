@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:login_form/changepassword.dart';
 import 'token.dart';
 
+
 class ActionPage extends StatefulWidget {
   const ActionPage({Key? key}) : super(key: key);
 
@@ -15,23 +16,25 @@ class _SecondScreenState extends State<ActionPage> {
   Dio dio = Dio();
 
   Future postData({action = String}) async {
-    const String pathUrl = 'http://192.168.100.204:8080/door';
+    const String pathUrl = 'http://192.168.100.249:8080/door';
     print(action);
     var token = await storage.read(
-      key: 'token',
+      key: "token",
     );
+
+    setAuthToken(token);
+
+    print("$token allah");
     try {
       Response response = await dio.post(pathUrl,
           data: {"action": action},
-          options: Options(headers: {"Authorization": "Bearer ${checkTokenValidity(token)}"}));
+          options: Options(headers: {
+            "Authorization": "Bearer: $token"
+          }));
 
       print('$token');
-      (response.data["token"]);
 
-      // ignore: avoid_print
-      print(response.statusCode);
-      // ignore: avoid_print
-      print(response.data);
+      print('Action successful: ${response.data["token"]}');
       return response.data["token"];
     } on DioError catch (e) {
       print('something happened sha: $e');
@@ -59,8 +62,10 @@ class _SecondScreenState extends State<ActionPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: ElevatedButton(
-              onPressed: () async {
-                await postData(action: "open");
+              onPressed: () {
+                setState(() async {
+                  await postData(action: "open");
+                });
               },
               child: const Text(
                 "Open",
@@ -71,11 +76,13 @@ class _SecondScreenState extends State<ActionPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: ElevatedButton(
-              onPressed: () async {
-                await postData(action: "close");
+              onPressed: () {
+                setState(() async {
+                  await postData(action: "close");
+                });
               },
               child: const Text(
-                "Close",
+                "close",
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -85,8 +92,7 @@ class _SecondScreenState extends State<ActionPage> {
           ),
           TextButton(
             onPressed: () async {
-              // await postData();
-              Navigator.push(
+              await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => const ChangePassword()));

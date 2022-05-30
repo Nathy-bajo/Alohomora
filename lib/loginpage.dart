@@ -29,13 +29,13 @@ class _LoginDemoState extends State<Login> {
   final TextEditingController _email = TextEditingController();
 
   Future postData() async {
-    const String pathUrl = 'http://192.168.100.204:8080/login';
+    const String pathUrl = 'http://192.168.100.249:8080/login';
 
     try {
       Response response = await dio
           .post(pathUrl, data: {"email": _email.text, "pw": _password.text});
 
-      await storage.write(key: 'token', value: response.data["token"]);
+      await storage.write(key: "token", value: response.data["token"]);
       print('Login successful: ${response.data["token"]}');
       return response.data["token"];
     } on DioError catch (e) {

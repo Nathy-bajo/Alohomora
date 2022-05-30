@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-// import 'package:login_form/LoginPage.dart';
 import 'package:login_form/finalpassword.dart';
 
 class ForgotPassword extends StatelessWidget {
@@ -28,7 +27,7 @@ class _LoginDemoState extends State<LoginDemo> {
   TextEditingController _email = TextEditingController();
 
   Future postData() async {
-    const String pathUrl = 'http://192.168.100.204:8080/forgot';
+    const String pathUrl = 'http://192.168.100.249:8080/forgot';
 
     try {
       Response response = await dio.post(pathUrl, data: {"email": _email.text});
@@ -44,7 +43,6 @@ class _LoginDemoState extends State<LoginDemo> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-            // title: const Text("Login Page"),
             ),
         body: SingleChildScrollView(
             child: Column(children: <Widget>[
