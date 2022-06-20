@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:login_form/actionpage.dart';
 import 'package:login_form/loginpage.dart';
 import 'package:login_form/token.dart';
 
@@ -30,13 +31,12 @@ class _LoginDemoState extends State<LoginDemo> {
   TextEditingController _email = TextEditingController();
 
   Future postData() async {
-    const String pathUrl = 'http://192.168.100.249:8080/reset';
+    const String pathUrl = 'http://192.168.100.6:8080/reset';
     try {
-
       dio.options.headers['content-Type'] = 'application/json';
 
       Response response = await dio.post(pathUrl, data: {
-         "email": _email.text,
+        "email": _email.text,
         "current_password": _password.text,
         "new_password": _new_password.text,
         "new_password_check": _confirm_password.text
@@ -56,7 +56,19 @@ class _LoginDemoState extends State<LoginDemo> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: const Text("Password"),
+          leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios_sharp,
+              ),
+              onPressed: () => {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ActionPage()))
+                  }),
+        ),
         body: SingleChildScrollView(
             child: Column(children: <Widget>[
           Padding(
@@ -65,7 +77,6 @@ class _LoginDemoState extends State<LoginDemo> {
               child: SizedBox(
                 width: 200,
                 height: 150,
-
                 child: Image.asset('images/password.png'),
               ),
             ),

@@ -2,6 +2,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:login_form/changepassword.dart';
+import 'package:login_form/loginpage.dart';
 import 'token.dart';
 
 
@@ -16,7 +17,7 @@ class _SecondScreenState extends State<ActionPage> {
   Dio dio = Dio();
 
   Future postData({action = String}) async {
-    const String pathUrl = 'http://192.168.100.249:8080/door';
+    const String pathUrl = 'http://192.168.100.6:8080/door';
     print(action);
     var token = await storage.read(
       key: "token",
@@ -46,6 +47,17 @@ class _SecondScreenState extends State<ActionPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Action"),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_sharp,
+          ),
+          onPressed: () =>  {
+             Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const LoginPage()))
+          }
+      ),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,

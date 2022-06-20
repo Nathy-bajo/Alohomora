@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:login_form/actionpage.dart';
 import 'package:login_form/forgotpassword.dart';
+import 'package:login_form/store.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -25,15 +26,15 @@ class Login extends StatefulWidget {
 
 class _LoginDemoState extends State<Login> {
   Dio dio = Dio();
-  final TextEditingController _password = TextEditingController();
-  final TextEditingController _email = TextEditingController();
+  final TextEditingController password = TextEditingController();
+  final TextEditingController email = TextEditingController();
 
   Future postData() async {
-    const String pathUrl = 'http://192.168.100.249:8080/login';
+    const String pathUrl = 'http://192.168.100.6:8080/login';
 
     try {
       Response response = await dio
-          .post(pathUrl, data: {"email": _email.text, "pw": _password.text});
+          .post(pathUrl, data: {"email": email.text, "pw": password.text});
 
       await storage.write(key: "token", value: response.data["token"]);
       print('Login successful: ${response.data["token"]}');
@@ -41,6 +42,23 @@ class _LoginDemoState extends State<Login> {
     } on DioError catch (e) {
       print('unknown error ma gee: $e');
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    init();
+  }
+
+  Future init() async {
+    final email = await UserSecureStorage.getEmail() ?? '';
+    final password = await UserSecureStorage.getPassword() ?? '';
+
+    setState(() {
+      this.email.text = email;
+      this.password.text = password;
+    });
   }
 
   @override
@@ -65,7 +83,7 @@ class _LoginDemoState extends State<Login> {
           Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
-                controller: _email,
+                controller: email,
                 onChanged: (email) {
                   print('email: $email');
                 },
@@ -79,7 +97,7 @@ class _LoginDemoState extends State<Login> {
             padding: const EdgeInsets.only(
                 left: 15.0, right: 15.0, top: 15.0, bottom: 0),
             child: TextField(
-              controller: _password,
+              controller: password,
               onChanged: (pw) {
                 print('password: $pw');
               },
@@ -109,9 +127,12 @@ class _LoginDemoState extends State<Login> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: TextButton(
                 onPressed: () async {
+                  await UserSecureStorage.setEmail(email.text);
+                  await UserSecureStorage.setPassword(password.text);
+
                   await postData();
 
-                  print({_email.text, _password.text});
+                  print({email.text, password.text});
                   Navigator.push(
                       context,
                       MaterialPageRoute(

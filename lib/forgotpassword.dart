@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:login_form/finalpassword.dart';
+import 'package:login_form/loginpage.dart';
 
 class ForgotPassword extends StatelessWidget {
   const ForgotPassword({Key? key}) : super(key: key);
@@ -27,7 +28,7 @@ class _LoginDemoState extends State<LoginDemo> {
   TextEditingController _email = TextEditingController();
 
   Future postData() async {
-    const String pathUrl = 'http://192.168.100.249:8080/forgot';
+    const String pathUrl = 'http://192.168.100.6:8080/forgot';
 
     try {
       Response response = await dio.post(pathUrl, data: {"email": _email.text});
@@ -43,7 +44,18 @@ class _LoginDemoState extends State<LoginDemo> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-            ),
+          title: const Text("Change password here"),
+          leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios_sharp,
+              ),
+              onPressed: () => {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginPage()))
+                  }),
+        ),
         body: SingleChildScrollView(
             child: Column(children: <Widget>[
           Padding(

@@ -25,4 +25,3 @@ checkTokenValidity(token) {
   setAuthToken(token);
   return token;
 }
-

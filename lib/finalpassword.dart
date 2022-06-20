@@ -2,6 +2,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:login_form/forgotpassword.dart';
 import 'package:login_form/loginpage.dart';
 
 class FinalPassword extends StatelessWidget {
@@ -30,12 +31,10 @@ class _LoginDemoState extends State<LoginDemo> {
   final TextEditingController _token = TextEditingController();
   final TextEditingController _email = TextEditingController();
 
-
   Future postData() async {
-    const String pathUrl = 'http://192.168.100.249:8080/email';
+    const String pathUrl = 'http://192.168.100.6:8080/email';
 
     try {
-
       Response response = await dio.post(pathUrl, data: {
         "email": _email.text,
         "reset_password": _reset_password.text,
@@ -54,8 +53,18 @@ class _LoginDemoState extends State<LoginDemo> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-             title: const Text("Email Page"),
-            ),
+          title: const Text("Email Page"),
+          leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios_sharp,
+              ),
+              onPressed: () => {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ForgotPassword()))
+                  }),
+        ),
         body: SingleChildScrollView(
             child: Column(children: <Widget>[
           Padding(
