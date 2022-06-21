@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:login_form/changepassword.dart';
 import 'package:login_form/loginpage.dart';
 import 'token.dart';
-
+import 'notifactions.dart';
 
 class ActionPage extends StatefulWidget {
   const ActionPage({Key? key}) : super(key: key);
@@ -14,6 +14,37 @@ class ActionPage extends StatefulWidget {
 }
 
 class _SecondScreenState extends State<ActionPage> {
+  bool isSwitched = false;
+  var textValue = 'Door has been unlocked';
+
+  void toggleSwitch(bool value) {
+    if (isSwitched == false) {
+      setState(() {
+        postData(action: "open");
+        NotificationApi.showNotification(
+            title: 'Test door',
+            body: 'Door has been opened.',
+            payload: 'test.door');
+
+        isSwitched = true;
+        textValue = 'Door has been unlocked';
+      });
+      print('Door has been locked');
+    } else {
+      setState(() {
+        postData(action: "close");
+        NotificationApi.showNotification(
+            title: 'Test door',
+            body: 'Door has been closed.',
+            payload: 'test.door');
+
+        isSwitched = false;
+        textValue = 'Door has been locked';
+      });
+      print('Door has been unlocked');
+    }
+  }
+
   Dio dio = Dio();
 
   Future postData({action = String}) async {
@@ -29,9 +60,7 @@ class _SecondScreenState extends State<ActionPage> {
     try {
       Response response = await dio.post(pathUrl,
           data: {"action": action},
-          options: Options(headers: {
-            "Authorization": "Bearer: $token"
-          }));
+          options: Options(headers: {"Authorization": "Bearer: $token"}));
 
       print('$token');
 
@@ -43,66 +72,57 @@ class _SecondScreenState extends State<ActionPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    NotificationApi.init();
+    listenNotifications();
+  }
+
+  void listenNotifications() =>
+      NotificationApi.onNotifications.listen(onClickedNotification);
+
+  void onClickedNotification(String? payload) =>
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => const ActionPage(),
+      ));
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Action"),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_sharp,
-          ),
-          onPressed: () =>  {
-             Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const LoginPage()))
-          }
-      ),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Text(
-            "Open/Close the door on your phone :D",
-            style: TextStyle(
-              fontSize: 20,
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: ElevatedButton(
-              onPressed: () {
-                setState(() async {
-                  await postData(action: "open");
-                });
-              },
-              child: const Text(
-                "Open",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        appBar: AppBar(
+          title: const Text("Action"),
+          leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios_sharp,
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: ElevatedButton(
-              onPressed: () {
-                setState(() async {
-                  await postData(action: "close");
-                });
-              },
-              child: const Text(
-                "close",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
+              onPressed: () => {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginPage()))
+                  }),
+        ),
+        body: Center(
+           child: Column(
+             mainAxisAlignment: MainAxisAlignment.center,
+            children:<Widget> [
+              Transform.scale(
+                scale: 2,
+                child: Switch(
+                  onChanged: toggleSwitch,
+                  value: isSwitched,
+                  activeColor: Colors.blue,
+                  activeTrackColor: Colors.blue,
+                  inactiveThumbColor: Colors.redAccent,
+                  inactiveTrackColor: Colors.red,
+                  ),
               ),
-            ),
+              Text(
+            textValue,
+            style: const TextStyle(fontSize: 20),
           ),
-          TextButton(
+                 TextButton(
             onPressed: () async {
               await Navigator.push(
                   context,
@@ -114,8 +134,9 @@ class _SecondScreenState extends State<ActionPage> {
               style: TextStyle(color: Colors.blue, fontSize: 15),
             ),
           ),
-        ],
-      ),
-    );
+            ],
+           ),
+        ),
+        );
   }
 }
