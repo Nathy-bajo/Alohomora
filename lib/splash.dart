@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:login_form/token.dart';
 import 'package:page_transition/page_transition.dart';
 import 'Animations/FadeAnimation.dart';
-
+import 'actionpage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -24,19 +24,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   bool hideIcon = false;
 
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    void validateToken() async {
-      var token = await storage.read(key: "token");
-
-      if (token != null) {
-        Navigator.of(context).pushNamed("/door");
-      }
-    }
 
     _scaleController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 300));
@@ -81,7 +72,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         Tween<double>(begin: 1.0, end: 32.0).animate(_scale2Controller)
           ..addStatusListener((status) async {
             if (status == AnimationStatus.completed) {
-              validateToken();
+              var token = await storage.read(key: "token");
+
+              if (token != null) {
+                Navigator.of(context).pushNamed("/door");
+              } else {
+                Navigator.of(context).pushNamed("/login");
+              }
             }
           });
   }
@@ -235,4 +232,3 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 }
-

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:login_form/changepassword.dart';
 import 'package:login_form/loginpage.dart';
 import 'token.dart';
-import 'notifactions.dart';
+// import 'notifactions.dart';
 
 class ActionPage extends StatefulWidget {
   const ActionPage({Key? key}) : super(key: key);
@@ -15,16 +15,16 @@ class ActionPage extends StatefulWidget {
 
 class _SecondScreenState extends State<ActionPage> {
   bool isSwitched = false;
-  var textValue = 'Door has been unlocked';
+  var textValue = 'on/off';
 
   void toggleSwitch(bool value) {
     if (isSwitched == false) {
       setState(() {
         postData(action: "open");
-        NotificationApi.showNotification(
-            title: 'Test door',
-            body: 'Door has been opened.',
-            payload: 'test.door');
+        // NotificationApi.showNotification(
+        //     title: 'Test door',
+        //     body: 'Door has been opened.',
+        //     payload: 'test.door');
 
         isSwitched = true;
         textValue = 'Door has been unlocked';
@@ -33,10 +33,10 @@ class _SecondScreenState extends State<ActionPage> {
     } else {
       setState(() {
         postData(action: "close");
-        NotificationApi.showNotification(
-            title: 'Test door',
-            body: 'Door has been closed.',
-            payload: 'test.door');
+        // NotificationApi.showNotification(
+        //     title: 'Test door',
+        //     body: 'Door has been closed.',
+        //     payload: 'test.door');
 
         isSwitched = false;
         textValue = 'Door has been locked';
@@ -71,27 +71,27 @@ class _SecondScreenState extends State<ActionPage> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
+  // @override
+  // void initState() {
+  //   super.initState();
 
-    NotificationApi.init();
-    listenNotifications();
-  }
+  //   NotificationApi.init();
+  //   listenNotifications();
+  // }
 
-  void listenNotifications() =>
-      NotificationApi.onNotifications.listen(onClickedNotification);
+  // void listenNotifications() =>
+  //     NotificationApi.onNotifications.listen(onClickedNotification);
 
-  void onClickedNotification(String? payload) =>
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => const ActionPage(),
-      ));
+  // void onClickedNotification(String? payload) =>
+  //     Navigator.of(context).push(MaterialPageRoute(
+  //       builder: (context) => const ActionPage(),
+  //     ));
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Action"),
+          title: const Text("Action Page"),
           leading: IconButton(
               icon: const Icon(
                 Icons.arrow_back_ios_sharp,
