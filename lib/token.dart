@@ -6,7 +6,7 @@ const storage = FlutterSecureStorage();
 Dio dio = Dio();
 
 setAuthToken(token) {
-  print(token + "toks");
+  // print(token + "toks");
   if (token.toString().length > 1) {
     dio.options.headers["Authorization"] = "Bearer: " + token;
   } else {

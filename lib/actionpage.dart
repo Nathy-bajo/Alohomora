@@ -1,10 +1,12 @@
 // ignore: file_names
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:login_form/changepassword.dart';
 import 'package:login_form/loginpage.dart';
+import 'package:login_form/video.dart';
 import 'token.dart';
-// import 'notifactions.dart';
 
 class ActionPage extends StatefulWidget {
   const ActionPage({Key? key}) : super(key: key);
@@ -14,32 +16,64 @@ class ActionPage extends StatefulWidget {
 }
 
 class _SecondScreenState extends State<ActionPage> {
-  bool isSwitched = false;
-  var textValue = 'on/off';
+  bool isSwitched = bool as bool;
+  var textValue;
+  var timer;
+
+  Future getDoorState({action = String}) async {
+    var data;
+    const String pathUrl = 'http://192.168.100.6:8080/polling';
+    print(action);
+    var token = await storage.read(
+      key: "token",
+    );
+
+    setAuthToken(token);
+
+    try {
+      Response response = await dio.get(pathUrl,
+          options: Options(headers: {"Authorization": "Bearer: $token"}));
+
+      print('Action successful: ${response.data["door"]}');
+      data = response.data["door"];
+      return data;
+    } on DioError catch (e) {
+      print('Oppsss: $e');
+      data = "oops someting went wrong";
+    }
+  }
+
+  loadDoor() async {
+    getDoorState().then((value) async {
+      if (value == "open") {
+        setState(() {
+          isSwitched = true;
+          textValue = 'Door has been unlocked';
+        });
+      } else {
+        setState(() {
+          isSwitched = false;
+          textValue = 'Door has been locked';
+        });
+      }
+      print('value: $value');
+      return value;
+    });
+  }
 
   void toggleSwitch(bool value) {
-    if (isSwitched == false) {
+    if (isSwitched == bool) {
       setState(() {
-        postData(action: "open");
-        // NotificationApi.showNotification(
-        //     title: 'Test door',
-        //     body: 'Door has been opened.',
-        //     payload: 'test.door');
-
+        postData(action: "close");
         isSwitched = true;
-        textValue = 'Door has been unlocked';
+        textValue = 'Door has been locked';
       });
       print('Door has been locked');
     } else {
       setState(() {
-        postData(action: "close");
-        // NotificationApi.showNotification(
-        //     title: 'Test door',
-        //     body: 'Door has been closed.',
-        //     payload: 'test.door');
-
+        postData(action: "open");
         isSwitched = false;
-        textValue = 'Door has been locked';
+        textValue = 'Door has been unlocked';
       });
       print('Door has been unlocked');
     }
@@ -56,13 +90,13 @@ class _SecondScreenState extends State<ActionPage> {
 
     setAuthToken(token);
 
-    print("$token allah");
+    // print("$token allah");
     try {
       Response response = await dio.post(pathUrl,
           data: {"action": action},
           options: Options(headers: {"Authorization": "Bearer: $token"}));
 
-      print('$token');
+      // print('$token');
 
       print('Action successful: ${response.data["token"]}');
       return response.data["token"];
@@ -71,72 +105,86 @@ class _SecondScreenState extends State<ActionPage> {
     }
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
+  @override
+  void initState() {
+    super.initState();
+    timer = Timer.periodic(const Duration(minutes: 1), (timer) => loadDoor());
+  }
 
-  //   NotificationApi.init();
-  //   listenNotifications();
-  // }
-
-  // void listenNotifications() =>
-  //     NotificationApi.onNotifications.listen(onClickedNotification);
-
-  // void onClickedNotification(String? payload) =>
-  //     Navigator.of(context).push(MaterialPageRoute(
-  //       builder: (context) => const ActionPage(),
-  //     ));
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Action Page"),
-          leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios_sharp,
+      appBar: AppBar(
+        title: const Text("Action Page"),
+        leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_sharp,
+            ),
+            onPressed: () => {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginPage()))
+                }),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            // const Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 15),
+            //   child: ElevatedButton(
+            //       onPressed: toggleSwitch(),
+            //       child: Text('data')),
+            // ),
+            Transform.scale(
+              scale: 2,
+              child: Switch(
+                onChanged: toggleSwitch,
+                value: isSwitched,
+                activeColor: Colors.blue,
+                activeTrackColor: Colors.blue,
+                inactiveThumbColor: Colors.redAccent,
+                inactiveTrackColor: Colors.red,
               ),
-              onPressed: () => {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginPage()))
-                  }),
-        ),
-        body: Center(
-           child: Column(
-             mainAxisAlignment: MainAxisAlignment.center,
-            children:<Widget> [
-              Transform.scale(
-                scale: 2,
-                child: Switch(
-                  onChanged: toggleSwitch,
-                  value: isSwitched,
-                  activeColor: Colors.blue,
-                  activeTrackColor: Colors.blue,
-                  inactiveThumbColor: Colors.redAccent,
-                  inactiveTrackColor: Colors.red,
-                  ),
+            ),
+            Text(
+              textValue,
+              style: const TextStyle(fontSize: 20),
+            ),
+            TextButton(
+              onPressed: () async {
+                await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ChangePassword()));
+              },
+              child: const Text(
+                'Click To Change Password',
+                style: TextStyle(color: Colors.blue, fontSize: 15),
               ),
-              Text(
-            textValue,
-            style: const TextStyle(fontSize: 20),
-          ),
-                 TextButton(
-            onPressed: () async {
-              await Navigator.push(
+            ),
+                TextButton(
+            onPressed: () {
+              Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const ChangePassword()));
+                      builder: (context) => const VideoPage()));
             },
             child: const Text(
-              'Click To Change Password',
+              'video route?',
               style: TextStyle(color: Colors.blue, fontSize: 15),
             ),
           ),
-            ],
-           ),
+          ],
         ),
-        );
+      ),
+    );
   }
 }

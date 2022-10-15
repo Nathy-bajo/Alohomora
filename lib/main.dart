@@ -15,7 +15,8 @@ void main() {
       '/reset': (context) => const ChangePassword(),
       '/forgot': (context) => const ForgotPassword(),
       '/email': (context) => const FinalPassword(),
-      '/splash': (context) => const HomePage()
+      '/splash': (context) => const HomePage(),
+      // '/video': (context) => const VideoPage()
     },
   ));
 }

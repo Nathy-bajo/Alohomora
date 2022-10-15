@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:login_form/token.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,27 @@ class _LoginDemoState extends State<Login> {
   final TextEditingController password = TextEditingController();
   final TextEditingController email = TextEditingController();
 
+  static const platform = MethodChannel('samples.flutter.dev/device_token');
+
+  Future<void> getDeviceToken() async {
+    const String pathUrl = 'http://192.168.100.6:8080/notification';
+    print('Testing');
+    var token = await storage.read(
+      key: "token",
+    );
+
+    setAuthToken(token);
+
+    try {
+      final String result = await platform.invokeMethod('getDeviceToken');
+      print('Access token? $result');
+      Response response = await dio.post(pathUrl,
+          data: {"device_token": result},
+          options: Options(headers: {"Authorization": "Bearer: $token"}));
+      return response.data["getDeviceToken"];
+    } on PlatformException catch (_) {}
+  }
+
   Future postData() async {
     const String pathUrl = 'http://192.168.100.6:8080/login';
 
@@ -47,6 +69,7 @@ class _LoginDemoState extends State<Login> {
   @override
   void initState() {
     super.initState();
+    getDeviceToken();
 
     init();
   }
@@ -54,7 +77,6 @@ class _LoginDemoState extends State<Login> {
   Future init() async {
     final email = await UserSecureStorage.getEmail() ?? '';
     final password = await UserSecureStorage.getPassword() ?? '';
-
     setState(() {
       this.email.text = email;
       this.password.text = password;
@@ -110,6 +132,7 @@ class _LoginDemoState extends State<Login> {
           ),
           TextButton(
             onPressed: () {
+              // registerForRemoteNotifications();
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -129,7 +152,6 @@ class _LoginDemoState extends State<Login> {
                 onPressed: () async {
                   await UserSecureStorage.setEmail(email.text);
                   await UserSecureStorage.setPassword(password.text);
-
                   await postData();
 
                   print({email.text, password.text});
@@ -146,3 +168,5 @@ class _LoginDemoState extends State<Login> {
         ])));
   }
 }
+
+// void registerForRemoteNotifications() {}

@@ -31,7 +31,7 @@ class _LoginDemoState extends State<LoginDemo> {
   TextEditingController _email = TextEditingController();
 
   Future postData() async {
-    const String pathUrl = 'http://192.168.100.6:8080/reset';
+    const String pathUrl = 'http://192.168.100.50:8080/reset';
     try {
       dio.options.headers['content-Type'] = 'application/json';
 

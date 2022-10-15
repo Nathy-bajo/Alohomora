@@ -28,7 +28,7 @@ class _LoginDemoState extends State<LoginDemo> {
   TextEditingController _email = TextEditingController();
 
   Future postData() async {
-    const String pathUrl = 'http://192.168.100.6:8080/forgot';
+    const String pathUrl = 'http://192.168.100.50:8080/forgot';
 
     try {
       Response response = await dio.post(pathUrl, data: {"email": _email.text});
